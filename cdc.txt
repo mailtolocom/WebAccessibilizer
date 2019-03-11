@@ -1,0 +1,92 @@
+cahier des charges d'un script grease monkey de paramétrage de l'accessibilité sur les pages web
+
+/A. Buts du script
+
+Permettre une meilleure navigation sur internet par les déficients visuels;
+en ajoutant des raccourcis clavier
+en captant des évènements
+en faisant dire des messages par la synthèse vocale
+cela sans besoin de maîtriser la programmation informatique
+ 
+/B. Les éléments graphiques à générer par le script
+
+il faut dans ce script:
+
+1. un formulaire de manipulation du dom et de ses paramétrages avec comme champs:
+* treeview exploration du dom
+* button Ajouter un nouveau paramètre pour cet élément
+* listview liste des paramètres existants
+* button modifier le paramètre sélectionné
+* button supprimer le paramètre sélectionné
+* button importer les paramètres d'accessibilité
+* button exporter les paramètres d'accessibilité
+
+Ce formulaire  sera généré au chargement de la page et sera initialement masqué
+Il apparaîtra lorsque pression du raccourci clavier Ctrl+Shift+F2
+Il sera automatiquement à nouveau masqué lorsqu'il perdra le focus
+
+2. un formulaire de paramétrage avec comme champs:
+* textbox en lecture seule date de création
+* textbox description du paramétrage
+* textbox en lecture seule référence de l'élément html
+* combobox type d'action à appliquer sur l'élément
+* textbox facultatif paramètre 1
+* textbox facultatif paramètre 2
+* textbox facultatif paramètre 3
+* button ok
+* button annuler
+
+Ce formulaire sera généré au chargement de la page et sera masqué par défaut
+Il apparaîtra lorsque appelé depuis le champ d'exploration du dom
+Il disparaîtra dès que plus aucun de ses champs n'aura le focus
+
+les actions à appliquer sur l'élément sélectionné seront les suivantes:
+1 * mettre un label aria sur l'élément 
+2 * ordonner la lecture automatique lorsque changement du texte dans l'élément
+3 * faire dire le texte suivant lorsque apparition/affichage de l'élément
+4 * faire dire le texte suivant lorsque disparition/masquage de l'élément
+5 * assigner le raccourci clavier suivant pour la lecture du texte contenu dans l'élément
+6 * assigner le raccourci clavier suivant pour se déplacer à l'élément
+7 * assigner le raccourci clavier suivant pour effectuer un click/validation sur l'élément
+8 * masquer automatiquement l'élément
+9 * assigner l'attribut html suivant à l'élément
+
+
+3. un tableau listant les paramétrages pour le site en cours avec comme éléments de colonne et boutons:
+* description
+* date_creation
+* button désactiver
+* button supprimer
+
+/C; Précisions sur les conventions
+
+Ci dessous, une représentation du système de codification en JSON des paramétrages tels qu'ils seront enregistrés dans la base de données du navigateur:
+
+{ rem ouverture de l'objet des paramètres
+"url_site: url_du_site,
+"parameters":
+[ rem ouverture du tableau array des paramètres individuels
+{"description": "parametrage1",
+"dateCreation": x,
+"elementReference": x,
+"action": x,
+"param": x,
+"status": x}
+,
+{"description": "parametrage2",
+"date_creation": x,
+"action": x,
+"param": x,
+"status": x}
+,
+{"description": "parametrageX",
+"date_creation": x,
+"action": x,
+"param": x,
+"status": x}
+] rem fermeture du tableau array des paramètres individuels
+} rem fermeture de l'objet des paramètres
+
+A noter que les bdd embarquée dans les navigateur ne permettent d'enregistrer les informations que site par site. Les informations ne pourront donc pas être regroupées de manière globale.
+
+
