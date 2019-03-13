@@ -50,6 +50,7 @@ les actions à appliquer sur l'élément sélectionné seront les suivantes:
 7 * assigner le raccourci clavier suivant pour effectuer un click/validation sur l'élément
 8 * masquer automatiquement l'élément
 9 * assigner l'attribut html suivant à l'élément
+10 * Assigner le style suivant à l'élément
 
 
 3. un tableau listant les paramétrages pour le site en cours avec comme éléments de colonne et boutons:

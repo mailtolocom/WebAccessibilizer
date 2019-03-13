@@ -433,9 +433,9 @@ elm.setAttribute("aria-label", p.param1);
 break;
 case "2": // say the text when there is change in the element
 // we use  aria arguments
-elm.setAttribute("aria-live", "assertive");
+elm.setAttribute("aria-live", "polite");
 elm.setAttribute("aria-atomic", "false");
-elm.setAttribute("aria-revelant", "all");
+elm.setAttribute("aria-revelant", "addition");
 break;
 case "3": // say a text when the element appeare
 break;
@@ -476,6 +476,27 @@ elm.setAttribute("aria-hidden", "true");
 break;
 case "9": // assign an html attribute to the element
 elm.setAttribute(p.param1, p.param2);
+break;
+case "10": // assign an aria style/role to the element
+switch(p.param1){
+case "heading1": // 
+case "heading2": // 
+case "heading3": // 
+case "heading4": // 
+case "heading5": // 
+case "heading6": // 
+// we assign the style of title
+elm.setAttribute("role", "heading");
+// then we get and set the level to this title
+s = p.param1;
+s = s.substring(7);
+elm.setAttribute("aria-level", s);
+break;
+default: // 
+// we simply assign the new aria role
+elm.setAttribute("role", p.param1);
+break;
+} // End switch
 break;
 } // End switch
 } // End For
@@ -1474,28 +1495,30 @@ try{
 // we create the form
 frm = document.createElement("form");
 this.frm = frm;
+frm.setAttribute("role", "dialog");
 frm.setAttribute("id", "frmAccessibility_yyd");
 frm.setAttribute("style", "display: none;");
 frm.addEventListener('submit', this.frm_Submit, true);
 frm.addEventListener('blur', this.frm_Blur, true);
 
-// w create a title inside the form
+// we create a title inside the form
 elm = document.createElement("h2");
 elm.innerText = "Accessibilization form";
 frm.appendChild(elm);
 
-// we create the dom explorer inside the form 
+// the dom explorer inside the form 
 elm = document.createElement("select");
 this.domExplorer = elm;
 elm.setAttribute("id", "dom_explorer_yyd");
-elm.setAttribute("aria-label", "Accessible dom explorer. Use arrow key to explore the dom and select an element");
+elm.setAttribute("title", "Accessible dom explorer. Use arrow key to explore the dom and select an element");
 elm.setAttribute("size", "3");
+elm.addEventListener('focus', this.explorer_Focus, true);
 elm.addEventListener('keydown', this.explorer_KeyDown, true);
 frm.appendChild(elm);
 elm = document.createElement("br");
 frm.appendChild(elm);
 
-// we create the button to âdd a new parameter inside the form 
+// the button to âdd a new parameter inside the form 
 elm = document.createElement("button");
 elm.innerText = "Add a new accessibility parameter for this dom element";
 elm.addEventListener('click', this.btAdd_Click, true);
@@ -1503,17 +1526,17 @@ frm.appendChild(elm);
 elm = document.createElement("br");
 frm.appendChild(elm);
 
-// we create the existing parameters list inside the form 
+// the existing parameters list inside the form 
 elm = document.createElement("select");
 this.lstParameters = elm;
 elm.setAttribute("id", "parameters_list_yyd");
-elm.setAttribute("aria-label", "Existing parameters");
+elm.setAttribute("title", "Existing parameters");
 elm.setAttribute("size", "8");
 frm.appendChild(elm);
 elm = document.createElement("br");
 frm.appendChild(elm);
 
-// we create the button to Modify the selected parameter inside the form 
+// the button to Modify the selected parameter inside the form 
 elm = document.createElement("button");
 elm.innerText = "Modify the selected accessibility parameter";
 elm.addEventListener('click', this.btModify_Click, true);
@@ -1521,7 +1544,7 @@ frm.appendChild(elm);
 elm = document.createElement("br");
 frm.appendChild(elm);
 
-// we create the button to delete the selected parameter inside the form 
+// the button to delete the selected parameter inside the form 
 elm = document.createElement("button");
 elm.innerText = "Delete the selected accessibility parameter";
 elm.addEventListener('click', this.btDelete_Click, true);
@@ -1529,7 +1552,7 @@ frm.appendChild(elm);
 elm = document.createElement("br");
 frm.appendChild(elm);
 
-// we create the button to import configuration file inside the form 
+// the button to import configuration file inside the form 
 elm = document.createElement("button");
 elm.innerText = "Import accessibility parameters for this site";
 elm.addEventListener('click', this.btImport_Click, true);
@@ -1537,7 +1560,7 @@ frm.appendChild(elm);
 elm = document.createElement("br");
 frm.appendChild(elm);
 
-// we create the button to export configuration file inside the form 
+// the button to export configuration file inside the form 
 elm = document.createElement("button");
 elm.innerText = "export accessibility parameters for this site";
 elm.addEventListener('click', this.btExport_Click, true);
@@ -1545,7 +1568,7 @@ frm.appendChild(elm);
 elm = document.createElement("br");
 frm.appendChild(elm);
 
-// we create the button to close/hide the form
+// the button to close/hide the form
 elm = document.createElement("button");
 this.btClose = elm;
 elm.innerText = "Close";
@@ -1571,6 +1594,18 @@ frm_Blur(e){
 // when the current form loose focus
 // frmAccessibility.hide();
 } // End Function
+
+explorer_Focus(e){
+// when the dom explorer take the focus
+// we are going to say the current node selected
+// with a litle delay
+window.setTimeout(function(){
+// if the focus is still on the dom explorer
+if(document.activeElement == frmAccessibility.domExplorer){
+sayCurrentNode();
+} // End If
+}, 1000);
+} // end function
 
 explorer_KeyDown(e){
 // à while pressing keys on the accessible dom explorer
@@ -1627,7 +1662,8 @@ return true;
 // t = 84 to get the innerText
 if(k == 84){
 sayCurrentNodeInnerText();
-return true;
+e.preventDefault();
+return false;
 } // End If
 
 // c = 67 to get the colors
@@ -1754,13 +1790,52 @@ alert("erreur " + ex.name + " ClFrmAccessibility btDelete_click " + ex.message);
 } // end function
 
 btImport_Click(e){
-//
-alert("This feature is not yet ready");
+// offer a way of importing parameters code with a json code
+// only for the current web site
+var i;
+var nb;
+var s = prompt("Importation ! Paste here the JSON code of the parameters you want to import for this web site", "");
+if(! s){
+return;
+} // End If
+// we check if the given code is a valid json
+var  j = JSON.parse(s);
+if(! j){
+alert("Error ! The code given to import is not a valid JSON");
+return;
+} // End If
+// we check the presence of essential object in the json
+if(! j.url_site || ! j.parameters){
+alert("Error ! The code given is not formatted properly");
+return;
+} // End If
+// are they parameters for the good web site ?
+if(j.url_site != location.hostname){
+if(! confirm("Warning ! These parameters are actually made for the site " + j.url_site + ". that is different of " + location.hostname + ". Are you sure you still want to import them ?")){
+return;
+} // End If
+} // End If
+// here we try to import the new parameters
+nb = 0;
+for(i=0; i<j.parameters.length; i++){
+accessibilityParameters.parameters.push(j.parameters[i]);
+nb++;
+} // End For
+// we clear and refill the visible list of parameters
+frmAccessibility.clearParametersList();
+frmAccessibility.fillParametersList();
+// and we save the changes
+saveAccessibilityParameters()
+// message of succès
+alert(nb + " new parameters have been imported successfully");
 } // end function
 
 btExport_Click(e){
-//
-alert("This feature is not yet ready");
+// offer a way of exporting parameters code in a json code
+// only for the current web site
+var s = JSON.stringify(accessibilityParameters);
+var msg = "Exportation ! Copy this JSON code and save it some where";
+prompt(msg, s);
 } // end function
 
 btClose_Click(e){
@@ -1861,12 +1936,13 @@ var elm
 // we create the form
 frm = document.createElement("form");
 this.frm = frm;
+frm.setAttribute("role", "dialog");
 frm.setAttribute("id", "frmParameter_yyd");
 frm.setAttribute("style", "display: none;");
 frm.addEventListener('submit', this.frm_Submit, true);
 frm.addEventListener('blur', this.frm_Blur, true);
 
-// w create a title inside the form
+// we create a title inside the form
 elm = document.createElement("h2");
 elm.innerText = "Parameter form";
 frm.appendChild(elm);
@@ -1913,6 +1989,7 @@ elm.add(createNewOption("6", "Assign the following key shortcut to bring the foc
 elm.add(createNewOption("7", "Assign the following key shortcut to make a click on this element"));
 elm.add(createNewOption("8", "Automatically hide this element"));
 elm.add(createNewOption("9", "Assign the following html attribute to this element"));
+elm.add(createNewOption("10", "Assign the following style to this element"));
 // the event
 elm.addEventListener('change', this.cmbAction_Change, true);
 // we add to the form
@@ -1943,6 +2020,75 @@ elm = document.createElement("input");
 this.txtParam3 = elm;
 elm.setAttribute("type", "text");
 elm.setAttribute("title", "param3");
+frm.appendChild(elm);
+elm = document.createElement("br");
+frm.appendChild(elm);
+
+// the combobox of available styles to apply on the selected element
+elm = document.createElement("select");
+this.cmbStyle = elm;
+elm.setAttribute("title", "Choose a style to apply on the element");
+// we add its items
+elm.add(createNewOption("alert", "alert: to describe as an alert area"));
+elm.add(createNewOption("application", "application: to describe as a desktop application (opposable to role document)"));
+elm.add(createNewOption("article", "article: to describe as an article"));
+elm.add(createNewOption("banner", "banner: to describe as a banner area"));
+elm.add(createNewOption("button", "button: to make appeare as a button"));
+elm.add(createNewOption("checkbox", "checkbox: to make appeare as a checkbox"));
+elm.add(createNewOption("columnheader", "columnheader: to describe as a column header"));
+elm.add(createNewOption("combobox", "combobox: to make appeare as a combobox control"));
+elm.add(createNewOption("complementary", "complementary: to describe as a complementary area"));
+elm.add(createNewOption("contentinfo", "contentinfo: to describe as a content info area"));
+elm.add(createNewOption("dialog", "dialog: to make appeare as a dialog box"));
+elm.add(createNewOption("document", "document: to describe as a document like a text document navigable with arrow keys (opposable to role application)"));
+elm.add(createNewOption("form", "form: to describe as a form area"));
+elm.add(createNewOption("grid", "grid: to make appeare as a a table"));
+elm.add(createNewOption("gridcell", "gridcell: to make appeare as a grid cell of a table"));
+elm.add(createNewOption("heading1", "heading1: to make appeare as a level 1 of title"));
+elm.add(createNewOption("heading2", "heading2: to make appeare as a level 2 of title"));
+elm.add(createNewOption("heading3", "heading3: to make appeare as a level 3 of title"));
+elm.add(createNewOption("heading4", "heading4: to make appeare as a level 4 of title"));
+elm.add(createNewOption("heading5", "heading5: to make appeare as a level 5 of title"));
+elm.add(createNewOption("heading6", "heading6: to make appeare as a level 6 of title"));
+elm.add(createNewOption("img", "img: to make appeare as an image"));
+elm.add(createNewOption("input", "input: to make appeare as a generic type of widget that allows user input"));
+elm.add(createNewOption("link", "link: to make appeare as a link on which it could be perform a click"));
+elm.add(createNewOption("list", "list: to describe as a list"));
+elm.add(createNewOption("listbox", "listbox: to make appeare as a listbox control"));
+elm.add(createNewOption("listitem", "listitem: to describe as a list item"));
+elm.add(createNewOption("log", "log: to describe as type of live region where new information is added in meaningful order and old information may disappear. "));
+elm.add(createNewOption("main", "main: to describe as the main content area of the page"));
+elm.add(createNewOption("math", "math: to describe as a math formula"));
+elm.add(createNewOption("menu", "menu: to make appeare as a menu that offers a list of choices to the user"));
+elm.add(createNewOption("menubar", "menubar: to make appeare as a menu bar that regroup many menus"));
+elm.add(createNewOption("menuitem", "menuitem: to make appeare as a menu item"));
+elm.add(createNewOption("menuitemcheckbox", "menuitemcheckbox: to make appeare as a menu item checkbox"));
+elm.add(createNewOption("menuitemradio", "menuitemradio: to make appeare as a menu item radio button"));
+elm.add(createNewOption("navigation", "navigation: to describe as a navigation area that usually regroup several groups of links"));
+elm.add(createNewOption("note", "note: to describe as a note"));
+elm.add(createNewOption("option", "option: to make appeare as an option of a combobox"));
+elm.add(createNewOption("progressbar", "progressbar: to make appeare as a progress bar"));
+elm.add(createNewOption("radio", "radio: to make appeare as a radio button"));
+elm.add(createNewOption("radiogroup", "radiogroup: to make appeare as a radio groupe"));
+elm.add(createNewOption("row", "row: to describe as a row of grids in a table"));
+elm.add(createNewOption("rowheader", "rowheader: to describe as a row header cell"));
+elm.add(createNewOption("search", "search: to describe as a search area"));
+elm.add(createNewOption("select", "select: to describe as a form widget that allows the user to make selections from a set of choices/options"));
+elm.add(createNewOption("status", "status: to make appeare as a status bar"));
+elm.add(createNewOption("slider", "slider: to make appeare as as slider control or a user input where the user selects a value from within a given range"));
+elm.add(createNewOption("tab", "tab: to make appeare as a tab control"));
+elm.add(createNewOption("tablist", "tablist: to make appeare as a container of tab controls"));
+elm.add(createNewOption("tabpanel", "tabpanel: to make appeare as a tab page"));
+elm.add(createNewOption("textbox", "textbox: to make appeare as a textbox control"));
+elm.add(createNewOption("timer", "timer: to describe as a type of live region containing a numerical counter which indicates an amount of elapsed time from a start point, or the time remaining until an end point"));
+elm.add(createNewOption("toolbar", "toolbar: to describe as a tool bar"));
+elm.add(createNewOption("tooltip", "tooltip: to make appeare as a tooltip or contextual popup that displays a description for an element."));
+elm.add(createNewOption("tree", "tree: to make appeare as a treeview control habitually apply to ul lists"));
+elm.add(createNewOption("treeitem", "treeitem: to make appeare as a item of a treeview"));
+elm.add(createNewOption("treegrid", "treegrid: to make appeare as a tree grid"));
+// the event
+elm.addEventListener('change', this.cmbStyle_Change, true);
+// we add to the form
 frm.appendChild(elm);
 elm = document.createElement("br");
 frm.appendChild(elm);
@@ -2042,14 +2188,24 @@ frmParameter.txtParam1.style.display = "block";
 frmParameter.txtParam2.title = "Type the attribut value you want to assign to the element";
 frmParameter.txtParam2.style.display = "block";
 break;
+case "10": // 
+frmParameter.cmbStyle.style.display = "block";
+break;
 } // End switch
 } // End Function
+
+cmbStyle_Change(e){
+// when another aria style to apply is been choosen
+// we send its value to the param1 field
+frmParameter.txtParam1.value = frmParameter.cmbStyle.value;
+} // end function
 
 initializeAdditionalParameters(){
 // first we hide them all
 frmParameter.txtParam1.style.display = "none";
 frmParameter.txtParam2.style.display = "none";
 frmParameter.txtParam3.style.display = "none";
+frmParameter.cmbStyle.style.display = "none";
 // then we initialize their titles
 frmParameter.txtParam1.title = "";
 frmParameter.txtParam2.title = "";
@@ -2089,6 +2245,13 @@ if(frmParameter.txtParam3.style.display == "block"){
 if(frmParameter.txtParam3.value == ""){
 alert("Error ! You have forgotten to give a precision to this parameter");
 frmParameter.txtParam3.focus();
+return;
+} // End If
+} // End If
+if(frmParameter.cmbStyle.style.display == "block"){
+if(frmParameter.txtParam1.value == ""){
+alert("Error ! You have forgotten to select a style to this parameter");
+frmParameter.cmbStyle.focus();
 return;
 } // End If
 } // End If
@@ -2154,6 +2317,7 @@ frmParameter.parameter.action = "";
 frmParameter.parameter.param1 = "";
 frmParameter.parameter.param2 = "";
 frmParameter.parameter.param3 = "";
+frmParameter.parameter.cmbStyle= "";
 frmParameter.parameter.status = "1";
 } else { // the parameter exists
 frmParameter.parameter = accessibilityParameters.parameters[parameterIndex];
@@ -2167,6 +2331,11 @@ frmParameter.cmbAction.value = frmParameter.parameter.action;
 frmParameter.txtParam1.value = frmParameter.parameter.param1;
 frmParameter.txtParam2.value = frmParameter.parameter.param2;
 frmParameter.txtParam3.value = frmParameter.parameter.param3;
+if(frmParameter.cmbAction.value == "10"){
+frmParameter.cmbStyle.value = frmParameter.txtParam1.value;
+} else {
+frmParameter.cmbStyle.value = "";
+} // End If
 // and we refresh the actions field
 frmParameter.cmbAction_Change(null);
 

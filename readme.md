@@ -68,11 +68,13 @@ When pressed, it delete the current selected parameter in the list of existing p
 
 ### the button to import parameters
 
-Not yet implemented
+This button opens a prompt dialog in wich you can paste the code of parameters to import.
+When the parameters to import has ot been made for the current web site, it will ask you to confirm the importation.
 
 ### the button to export parameters
 
-Not yet implemented
+This button opens a prompt dialog displaying you the all JSON code of parameters for the current page.
+You are invited to copy it and save it some where on your computer.
 
 ### the button close
 
@@ -111,7 +113,8 @@ Available actions are the following:
 * assign the following key shortcut to bring the focus to the element;;
 * assign the following key shortcut to click on the element;
 * automatically hide the element;
-* assign the following html attribute to the element.
+* assign the following html attribute to the element.;
+* Assign the following style to the element
 
 When some of these action are choosen, it will trigger the appearence of additional field in wich some other argument will be asked to fill.
 
