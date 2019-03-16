@@ -41,6 +41,9 @@ However, note that you can force the vocal synthesis to say somme informations o
 * n = say the type, name, and class of the current selected node
 * p = say the absolute positions (left and top) of the current selected node
 * t = say the inner text in the current selected node
+* t pressed two times quickly = show the inner text of the current selected node in a prompt dialog in order to be copied;
+* h = say the inner HTML code in the current selected node;
+* h pressed two times quickly = show the inner html code  of the current selected node in a prompt dialog in order to be copied;
 * enter = show the current node description in a prompt dialog in order to be selected and copied
 
 Also note that you can move quickly between the nodes of the treeview by pressing these keys:
@@ -48,8 +51,8 @@ Also note that you can move quickly between the nodes of the treeview by pressin
 * shift+f = open e search dialog to find a node by its tag name
 * f3 = search the next node with the criteria given in the search dialog;
 * Ctrl+home = go to the first node  of the treeview. it is always the body tag;
-* home = go to the first cibling
-* end = go to the last cibling
+* home = go to the first cibling in the treeview
+* end = go to the last cibling in the treeview
 
 ### the button to add a new configuration parameter
 
@@ -59,7 +62,13 @@ When pressed, it opens the parameter form in order to create an accessibilizatio
 
 It is the list of parameters you've already configured.
 
+Note that in this list you can press:
+
+* del to delete the selected parameter;
+* space to activate or deactivate a parameter.
+
 ### The button to modify the current selected parameter
+
 When pressed, it opens the parameter form in order to modify the configuration for the parameter currently selected in the list of existing parameters.
 
 ### The button to delete parameter
@@ -91,13 +100,44 @@ Its fields are the following:
 Type here in one line the text that describe the roll of the parameter.
 If there is a shortcut that will be attached, we advise you to at the and write this shortcut so that it appeare also in that description.
 
+### The checkbox to activate or deactivate the parameter
+
+Always checked by default, you can uncheck it if you don't want that the current parameter is been executed anymore.
+
 ### the textbox of the date of creation
 
-Normally you don't have to modify this field.
+This field doesn't allow modification.
 
 ### the reference of the element of the page to customize
 
-Normally you don't have to modify this field.
+In this field you will have the reference of the dom element the action of the parameter should be executed.
+You will notice that the referencement system look like the one in the css.
+But it has its particularities.
+
+Some examples:
+
+* #"bt_close" 
+indicate elements with the id "bt_close";
+
+* ."minuscule"
+indicate elements with the class "minuscule";
+
+* $"txt_town"
+indicate elements with the name "txt_town"
+
+* div
+simply indicate div elements 
+
+Note that the character "\" indicate that the following are childre of the previous one.
+In the classical css referencement system it is the space character that do the same thing.
+
+### The combobox to choose the type of reference
+
+Obviously this field is related to the previous field (for the dom element reference) decause it precise if the reference previously typed should find an uniq and precise element or a group of elements.
+
+When the value is absolute in this field, the reference should have indicated a only one element;
+
+and when the value is "relative" in this field, all elements matching the reference will be collected.
 
 ### The combobox of action to apply
 
@@ -117,6 +157,19 @@ Available actions are the following:
 * Assign the following style to the element
 
 When some of these action are choosen, it will trigger the appearence of additional field in wich some other argument will be asked to fill.
+
+### Additional fields
+
+They apeare or disapeare according to the currently selected action in the combobox of actions.
+
+Tey can be:
+
+* a textbox to type a required text like the text to say when the action is triggered;
+
+* a textbox to type a key shortcut. 
+For example: ctrl+shift+s, shift+3, alt+shift+z will be recognized.
+
+* a combobox to choose for example an aria style.
 
 ### the button OK
 
